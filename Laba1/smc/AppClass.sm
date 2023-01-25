@@ -1,0 +1,70 @@
+%class AppClass
+%start Map::PreCommand
+%map Map
+%%
+// char digit skip hyphen dotOrSlash unknown end
+PreCommand 
+{
+	char
+		Command {addChar();}
+	digit
+		Command {addChar();}
+	dotOrSlash
+		Command {addChar();}
+	skip
+		nil {}
+}
+
+Command
+{
+	char
+		nil {addChar();}
+	digit
+		nil {addChar();}
+	dotOrSlash
+		nil {addChar();}
+	skip
+		PreKeys {addCommand();}	
+}
+
+PreKeys
+{
+	skip
+		nil {}
+	hyphen
+		Keys {}
+	end
+		[ctxt.NotEmptyKeys()] OK {}
+}
+
+Keys
+{
+	char
+		nil {addChar(); addKey();}
+	skip
+		PreKeys {}
+	end
+		OK {}
+}
+
+OK {}
+
+Error {}
+
+Default {
+	char
+		Error {Unacceptable();}
+	digit
+		Error {Unacceptable();}
+	skip
+		Error {Unacceptable();}
+	hyphen
+		Error {Unacceptable();}
+	dotOrSlash
+		Error {Unacceptable();}
+	unknown
+		Error {Unacceptable();}
+	end
+		Error {clear();Unacceptable();}
+}
+%%
